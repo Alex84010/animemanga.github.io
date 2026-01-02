@@ -276,12 +276,12 @@
                 { id: 6, name: 'One Piece', path: 'videos/onepiece', seasons: [61, 77] }
             ],
             manga: [
-                { id: 7, name: 'Fairy Tail', path: 'mangas/fairytail', tomes: 63, chapPerTome: 9 },
-                { id: 8, name: 'Pokemon', path: 'mangas/pokemon', tomes: 50, chapPerTome: 10 },
-                { id: 9, name: 'Naruto', path: 'mangas/naruto', tomes: 72, chapPerTome: 10 },
-                { id: 10, name: 'One Punch Man', path: 'mangas/onepunchman', tomes: 28, chapPerTome: 7 },
-                { id: 11, name: 'Tokyo Ghoul', path: 'mangas/tokyoghoul', tomes: 14, chapPerTome: 10 },
-                { id: 12, name: 'Bleach', path: 'mangas/bleach', tomes: 74, chapPerTome: 9 }
+                { id: 7, name: 'Fairy Tail', path: 'mangas/fairytail', tomes: 63 },
+                { id: 8, name: 'Pokemon', path: 'mangas/pokemon', tomes: 50 },
+                { id: 9, name: 'Naruto', path: 'mangas/naruto', tomes: 72 },
+                { id: 10, name: 'One Punch Man', path: 'mangas/onepunchman', tomes: 28 },
+                { id: 11, name: 'Tokyo Ghoul', path: 'mangas/tokyoghoul', tomes: 14 },
+                { id: 12, name: 'Bleach', path: 'mangas/bleach', tomes: 74 }
             ]
         };
 
@@ -339,19 +339,10 @@
                 loadEpisodes();
             } else {
                 document.getElementById('seasonBox').style.display = 'none';
-                document.getElementById('tomeBox').style.display = 'block';
-                document.getElementById('epLabel').textContent = 'Chapitres';
+                document.getElementById('tomeBox').style.display = 'none';
+                document.getElementById('epLabel').textContent = 'Tomes';
 
-                const sel = document.getElementById('tomeSelect');
-                sel.innerHTML = '';
-                for (let i = 0; i < item.tomes; i++) {
-                    const opt = document.createElement('option');
-                    opt.value = i;
-                    opt.textContent = `Tome ${i + 1}`;
-                    sel.appendChild(opt);
-                }
-                currentTome = 0;
-                loadChapters();
+                loadTomes();
             }
         }
 
@@ -385,6 +376,57 @@
             selectEp(0);
         }
 
+        function loadChapters() {
+            const chaps = currentItem.chapPerTome;
+            const container = document.getElementById('episodes');
+            container.innerHTML = '';
+
+            for (let i = 0; i < chaps; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'ep-btn';
+                btn.textContent = i + 1;
+                btn.onclick = () => selectEp(i);
+                container.appendChild(btn);
+            }
+            selectEp(0);
+        }
+
+        function loadChapters() {
+            const chaps = currentItem.chapPerTome;
+            const container = document.getElementById('episodes');
+            container.innerHTML = '';
+
+            for (let i = 0; i < chaps; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'ep-btn';
+                btn.textContent = i + 1;
+                btn.onclick = () => selectEp(i);
+                container.appendChild(btn);
+            }
+            selectEp(0);
+        }
+
+        function loadTomes() {
+            const container = document.getElementById('episodes');
+            container.innerHTML = '';
+
+            for (let i = 0; i < currentItem.tomes; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'ep-btn';
+                btn.textContent = `T${i + 1}`;
+                btn.onclick = () => selectTome(i);
+                container.appendChild(btn);
+            }
+            selectTome(0);
+        }
+
+        function selectTome(index) {
+            currentTome = index;
+            document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.ep-btn')[index].classList.add('active');
+            updatePlayer();
+        }
+
         function selectEp(index) {
             currentEp = index;
             document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
@@ -399,7 +441,12 @@
 
         function changeTome() {
             currentTome = parseInt(document.getElementById('tomeSelect').value);
-            loadChapters();
+            updatePlayer();
+        }
+
+        function changeTome() {
+            currentTome = parseInt(document.getElementById('tomeSelect').value);
+            updatePlayer();
         }
 
         function updatePlayer() {
@@ -408,7 +455,7 @@
                 const file = `${currentItem.path}/S${currentSeason + 1}E${currentEp + 1}.mp4`;
                 player.innerHTML = `<div>📺 ${file}</div>`;
             } else {
-                const file = `${currentItem.path}/T${currentTome + 1}C${currentEp + 1}.jpg`;
+                const file = `${currentItem.path}/T${currentTome + 1}.pdf`;
                 player.innerHTML = `<div>📖 ${file}</div>`;
             }
         }
