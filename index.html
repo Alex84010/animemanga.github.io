@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime & Manga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #000814;
+            color: #fff;
+        }
+
+        /* HOME PAGE */
+        #homePage {
+            display: block;
+        }
+
+        #homePage.hide {
+            display: none;
+        }
+
+        .top-bar {
+            background: linear-gradient(180deg, #001d3d 0%, #000814 100%);
+            padding: 25px 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #ffd60a;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .search {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 41, 107, 0.3);
+            border: 2px solid #003566;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: #001d3d;
+            border: 2px solid #003566;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+
+        .tab.active {
+            background: #ffc300;
+            color: #000;
+            border-color: #ffc300;
+        }
+
+        .grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            background: #001d3d;
+            border: 2px solid #003566;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card:active {
+            transform: scale(0.95);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #003566, #001d3d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #6c757d;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .card-body {
+            padding: 12px;
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .card-info {
+            font-size: 13px;
+            color: #adb5bd;
+        }
+
+        /* DETAIL PAGE */
+        #detailPage {
+            display: none;
+        }
+
+        #detailPage.show {
+            display: block;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #001d3d 0%, #000814 100%);
+            padding: 20px;
+        }
+
+        .back {
+            background: none;
+            border: none;
+            color: #ffc300;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd60a;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 250px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            border-bottom: 3px solid #003566;
+        }
+
+        .controls {
+            padding: 20px;
+        }
+
+        .select-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            font-size: 14px;
+            color: #adb5bd;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background: #001d3d;
+            border: 2px solid #003566;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .episodes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .ep-btn {
+            padding: 15px 5px;
+            background: #001d3d;
+            border: 2px solid #003566;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .ep-btn.active {
+            background: #ffc300;
+            color: #000;
+            border-color: #ffc300;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PAGE ACCUEIL -->
+    <div id="homePage">
+        <div class="top-bar">
+            <h1>Streaming</h1>
+            <input type="text" class="search" id="search" placeholder="Rechercher...">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('anime')">Anime</button>
+                <button class="tab" onclick="switchTab('manga')">Manga</button>
+            </div>
+        </div>
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- PAGE DETAIL -->
+    <div id="detailPage">
+        <div class="header">
+            <button class="back" onclick="goBack()">← Retour</button>
+            <div class="title" id="detailTitle"></div>
+        </div>
+
+        <div class="video-container" id="player">
+            Lecteur vidéo/manga
+        </div>
+
+        <div class="controls">
+            <div class="select-group" id="seasonBox">
+                <label class="label">Saison</label>
+                <select id="seasonSelect" onchange="changeSeason()"></select>
+            </div>
+
+            <div class="select-group" id="tomeBox" style="display:none;">
+                <label class="label">Tome</label>
+                <select id="tomeSelect" onchange="changeTome()"></select>
+            </div>
+
+            <div class="select-group">
+                <label class="label" id="epLabel">Épisodes</label>
+                <div class="episodes" id="episodes"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'anime';
+        let currentItem = null;
+        let currentSeason = 0;
+        let currentTome = 0;
+        let currentEp = 0;
+
+        const data = {
+            anime: [
+                { id: 1, name: 'Demon Slayer', path: 'videos/demonslayer', seasons: [26, 18] },
+                { id: 2, name: 'Oshi no Ko', path: 'videos/oshinoko', seasons: [11] },
+                { id: 3, name: 'Jujutsu Kaisen', path: 'videos/jujutsukaisen', seasons: [24, 23] },
+                { id: 4, name: 'Attack on Titan', path: 'videos/attackontitan', seasons: [25, 12, 22, 28] },
+                { id: 5, name: 'My Hero Academia', path: 'videos/myheroacademia', seasons: [13, 25, 25, 25, 25] },
+                { id: 6, name: 'One Piece', path: 'videos/onepiece', seasons: [61, 77] }
+            ],
+            manga: [
+                { id: 7, name: 'Fairy Tail', path: 'mangas/fairytail', tomes: 63, chapPerTome: 9 },
+                { id: 8, name: 'Pokemon', path: 'mangas/pokemon', tomes: 50, chapPerTome: 10 },
+                { id: 9, name: 'Naruto', path: 'mangas/naruto', tomes: 72, chapPerTome: 10 },
+                { id: 10, name: 'One Punch Man', path: 'mangas/onepunchman', tomes: 28, chapPerTome: 7 },
+                { id: 11, name: 'Tokyo Ghoul', path: 'mangas/tokyoghoul', tomes: 14, chapPerTome: 10 },
+                { id: 12, name: 'Bleach', path: 'mangas/bleach', tomes: 74, chapPerTome: 9 }
+            ]
+        };
+
+        function render() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            data[currentTab].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openDetail(item);
+
+                const info = currentTab === 'anime' 
+                    ? item.seasons.reduce((a,b) => a+b, 0) + ' épisodes'
+                    : item.tomes + ' tomes';
+
+                card.innerHTML = `
+                    <div class="card-img">${item.path}/cover.jpg<br>2048x2048</div>
+                    <div class="card-body">
+                        <div class="card-title">${item.name}</div>
+                        <div class="card-info">${info}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            render();
+        }
+
+        function openDetail(item) {
+            currentItem = item;
+            document.getElementById('homePage').classList.add('hide');
+            document.getElementById('detailPage').classList.add('show');
+            document.getElementById('detailTitle').textContent = item.name;
+
+            if (item.seasons) {
+                document.getElementById('seasonBox').style.display = 'block';
+                document.getElementById('tomeBox').style.display = 'none';
+                document.getElementById('epLabel').textContent = 'Épisodes';
+
+                const sel = document.getElementById('seasonSelect');
+                sel.innerHTML = '';
+                item.seasons.forEach((eps, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `Saison ${i + 1}`;
+                    sel.appendChild(opt);
+                });
+                currentSeason = 0;
+                loadEpisodes();
+            } else {
+                document.getElementById('seasonBox').style.display = 'none';
+                document.getElementById('tomeBox').style.display = 'block';
+                document.getElementById('epLabel').textContent = 'Chapitres';
+
+                const sel = document.getElementById('tomeSelect');
+                sel.innerHTML = '';
+                for (let i = 0; i < item.tomes; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `Tome ${i + 1}`;
+                    sel.appendChild(opt);
+                }
+                currentTome = 0;
+                loadChapters();
+            }
+        }
+
+        function loadEpisodes() {
+            const eps = currentItem.seasons[currentSeason];
+            const container = document.getElementById('episodes');
+            container.innerHTML = '';
+
+            for (let i = 0; i < eps; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'ep-btn';
+                btn.textContent = i + 1;
+                btn.onclick = () => selectEp(i);
+                container.appendChild(btn);
+            }
+            selectEp(0);
+        }
+
+        function loadChapters() {
+            const chaps = currentItem.chapPerTome;
+            const container = document.getElementById('episodes');
+            container.innerHTML = '';
+
+            for (let i = 0; i < chaps; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'ep-btn';
+                btn.textContent = i + 1;
+                btn.onclick = () => selectEp(i);
+                container.appendChild(btn);
+            }
+            selectEp(0);
+        }
+
+        function selectEp(index) {
+            currentEp = index;
+            document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.ep-btn')[index].classList.add('active');
+            updatePlayer();
+        }
+
+        function changeSeason() {
+            currentSeason = parseInt(document.getElementById('seasonSelect').value);
+            loadEpisodes();
+        }
+
+        function changeTome() {
+            currentTome = parseInt(document.getElementById('tomeSelect').value);
+            loadChapters();
+        }
+
+        function updatePlayer() {
+            const player = document.getElementById('player');
+            if (currentItem.seasons) {
+                const file = `${currentItem.path}/S${currentSeason + 1}E${currentEp + 1}.mp4`;
+                player.innerHTML = `<div>📺 ${file}</div>`;
+            } else {
+                const file = `${currentItem.path}/T${currentTome + 1}C${currentEp + 1}.jpg`;
+                player.innerHTML = `<div>📖 ${file}</div>`;
+            }
+        }
+
+        function goBack() {
+            document.getElementById('detailPage').classList.remove('show');
+            document.getElementById('homePage').classList.remove('hide');
+        }
+
+        render();
+    </script>
+</body>
+</html>
